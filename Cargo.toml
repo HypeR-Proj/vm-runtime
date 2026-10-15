@@ -1,0 +1,42 @@
+# SPDX-FileCopyrightText: 2026 roolrz
+# SPDX-License-Identifier: Apache-2.0
+
+[package]
+workspace = "../../app"
+name = "hyper-vm-runtime"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+# Unit-test modules live in tests/ and are included by their owning library.
+autotests = false
+
+[[bin]]
+name = "hyper-vm-runtime"
+path = "src/main.rs"
+test = false
+bench = false
+
+[dependencies]
+hyper-os = { workspace = true, features = ["std"] }
+hyper-rt.workspace = true
+hyper-service.workspace = true
+hyper-vm-image.workspace = true
+
+[lints]
+workspace = true
+
+[features]
+startup-profile = ["hyper-vm-support/startup-profile", "hyper-vm-support-shared/startup-profile"]
+broker-test = []
+test-runtime-crash = []
+test-power-crash = []
+
+[target.'cfg(target_os = "hyper")'.dependencies]
+hyper-vm-policy-shared.workspace = true
+hyper-vm-support-shared.workspace = true
+
+[target.'cfg(not(target_os = "hyper"))'.dependencies]
+hyper-vm-policy.workspace = true
+hyper-vm-support.workspace = true
