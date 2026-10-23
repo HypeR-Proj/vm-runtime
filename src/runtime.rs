@@ -136,6 +136,13 @@ pub(super) fn run(
         eprintln!("HypeR vm-runtime: {error}");
         Error::UnsupportedConfiguration
     })?;
+    if let Some(scheduling) = config.scheduling {
+        for cpu in &vcpus {
+            scheduling
+                .apply(cpu.as_handle_ref())
+                .map_err(Error::OperatingSystem)?;
+        }
+    }
     // Installation, not image loading, opens the broker admission window.
     // The manager retains the session endpoint until this status is observed.
     #[cfg(feature = "broker-test")]

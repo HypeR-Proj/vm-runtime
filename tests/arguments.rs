@@ -10,6 +10,7 @@ fn configuration() -> Configuration {
         memory_bytes: 128 * 1024 * 1024,
         vcpus: 1,
         bootargs: "console=ttyAMA0 --io-devices=3".into(),
+        scheduling: None,
         affinity: vec![Affinity {
             vcpu: 0,
             cpus: vec![0, 2],

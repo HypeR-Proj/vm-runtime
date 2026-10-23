@@ -57,11 +57,6 @@ pub(super) fn bind(
     let deadline = hyper_os::time::deadline_after(std::time::Duration::from_secs(60))
         .map_err(Error::OperatingSystem)?
         .as_raw();
-    let rights = machine
-        .as_handle_ref()
-        .info()
-        .map_err(Error::OperatingSystem)?
-        .rights;
     let mut machine = Some(machine);
     let record = (if pci {
         io::encode_pci_memory(base, length)
@@ -70,7 +65,7 @@ pub(super) fn bind(
     })
     .ok_or(Error::InvalidControl)?;
     let dispositions = &mut [
-        CapabilityDisposition::move_handle(&mut machine, RightsOffer::Exact(rights))
+        CapabilityDisposition::move_handle(&mut machine, RightsOffer::Exact(io::MACHINE_RIGHTS))
             .map_err(Error::OperatingSystem)?,
         CapabilityDisposition::duplicate(
             memory.as_handle_ref(),
@@ -87,7 +82,7 @@ pub(super) fn bind(
     );
     let mut bytes = [MaybeUninit::uninit(); io::BOUND_BYTES];
     let mut slots = [
-        CapabilityReceiveSlot::new::<VirtualMachineObject>(rights),
+        CapabilityReceiveSlot::new::<VirtualMachineObject>(io::MACHINE_RIGHTS),
         CapabilityReceiveSlot::new::<ByteChannelObject>(io::MAILBOX_RIGHTS),
     ];
     let message = session
