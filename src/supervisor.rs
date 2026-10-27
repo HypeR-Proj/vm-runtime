@@ -140,8 +140,13 @@ fn handle_control(
                 hyper_os::vm::set_vcpu_affinity(vcpus[vcpu as usize].as_handle_ref(), words)
             },
             |vcpu| {
-                hyper_os::vm::vcpu_info(vcpus[vcpu as usize].as_handle_ref())
-                    .map(|info| (info.host_cpu, info.migration_target))
+                hyper_os::vm::vcpu_info(vcpus[vcpu as usize].as_handle_ref()).map(|info| {
+                    (
+                        info.host_cpu,
+                        info.migration_target,
+                        info.scheduler_thread_id,
+                    )
+                })
             },
         );
         match control.try_send(&reply.encode()) {

@@ -9,13 +9,14 @@ pub fn handle(
     request: VcpuControlRequest,
     vcpu_count: usize,
     mut set_affinity: impl FnMut(u32, &[u64]) -> hyper_os::Result<()>,
-    mut inspect: impl FnMut(u32) -> hyper_os::Result<(Option<u32>, Option<u32>)>,
+    mut inspect: impl FnMut(u32) -> hyper_os::Result<(Option<u32>, Option<u32>, u64)>,
 ) -> VcpuControlReply {
     let mut reply = VcpuControlReply {
         sequence: request.sequence,
         vcpu: request.vcpu,
         host_cpu: None,
         pending_host_cpu: None,
+        scheduler_thread_id: None,
         status: hyper_os::Status::OK,
     };
     let result = (|| {
@@ -28,12 +29,16 @@ pub fn handle(
             }
             set_affinity(request.vcpu, &words)?;
             // Inspection must not turn an accepted side effect into a rejection.
-            if let Ok((current, pending)) = inspect(request.vcpu) {
+            if let Ok((current, pending, thread)) = inspect(request.vcpu) {
+                reply.scheduler_thread_id = Some(thread);
                 reply.host_cpu = current;
                 reply.pending_host_cpu = pending;
             }
         } else {
-            (reply.host_cpu, reply.pending_host_cpu) = inspect(request.vcpu)?;
+            let (current, pending, thread) = inspect(request.vcpu)?;
+            reply.host_cpu = current;
+            reply.pending_host_cpu = pending;
+            reply.scheduler_thread_id = Some(thread);
         }
         Ok(())
     })();

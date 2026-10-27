@@ -28,7 +28,7 @@ fn inspection_is_read_only_and_pending_is_not_completion() {
         request(None),
         2,
         |_, _| panic!("read-only request"),
-        |_| Ok((Some(0), Some(2))),
+        |_| Ok((Some(0), Some(2), 123)),
     );
     assert_eq!(reply.host_cpu, Some(0));
     assert_eq!(reply.pending_host_cpu, Some(2));
@@ -40,7 +40,7 @@ fn inspection_is_read_only_and_pending_is_not_completion() {
             assert_eq!(target, [4, 0, 0, 0]);
             Ok(())
         },
-        |_| Ok((Some(0), Some(2))),
+        |_| Ok((Some(0), Some(2), 123)),
     );
     assert_eq!(reply.status, hyper_os::Status::OK);
 }
