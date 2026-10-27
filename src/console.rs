@@ -9,7 +9,6 @@ use hyper_os::{Error, Result, Status};
 use hyper_service::vm;
 use std::collections::VecDeque;
 use std::mem::MaybeUninit;
-use std::time::Duration;
 
 #[cfg(feature = "test-runtime-crash")]
 #[path = "../tests/crash.rs"]
@@ -62,12 +61,16 @@ impl Console {
             .duplicate(Rights::ASSIGN_DEVICE.union(Rights::TRANSFER))
     }
 
-    pub fn attach(&mut self, waits: &WaitSet) -> Result<()> {
+    pub fn attach(&mut self, waits: &WaitSet, request: vm::ConsoleAttachRequest) -> Result<()> {
+        let Some(deadline) =
+            request.receive_deadline(hyper_os::time::monotonic_now()?.as_nanoseconds())
+        else {
+            return Ok(());
+        };
         let mut bytes = [MaybeUninit::uninit(); vm::MESSAGE_BYTES];
         let mut slots = [CapabilityReceiveSlot::new::<ByteChannelObject>(
             vm::CONSOLE_SESSION_RIGHTS,
         )];
-        let deadline = hyper_os::time::deadline_after(Duration::from_millis(100))?.as_raw();
         let message = match self.connection.receive(deadline, &mut bytes, &mut slots) {
             Ok(message) => message,
             // A disappearing manager/client cannot strand the VM runtime.

@@ -150,13 +150,19 @@ fn handle_control(
         }
         return Ok(ServiceAction::Continue);
     }
-    let command = message
-        .get(..length)
-        .and_then(vm_contract::InstanceCommand::decode)
-        .ok_or(Error::InvalidControl)?;
-    if command == vm_contract::InstanceCommand::AttachConsole {
-        console.attach(waits).map_err(Error::OperatingSystem)?;
+    if let Some(request) = vm_contract::ConsoleAttachRequest::decode(&message[..length]) {
+        // Exercise a receiver dispatched after the former 100 ms rendezvous
+        // limit, on every runtime-loss acceptance cycle, not just under TCG load.
+        #[cfg(feature = "test-runtime-crash")]
+        std::thread::sleep(std::time::Duration::from_millis(250));
+        console
+            .attach(waits, request)
+            .map_err(Error::OperatingSystem)?;
         return Ok(ServiceAction::Continue);
+    }
+    match vm_contract::InstanceCommand::decode(&message[..length]) {
+        Some(vm_contract::InstanceCommand::Stop) => {}
+        None => return Err(Error::InvalidControl),
     }
     let terminal = stop_and_retire(machine, vcpus)?;
     if terminal != hyper_os::vm::VirtualCpuTermination::Administrative {
