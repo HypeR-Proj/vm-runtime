@@ -28,7 +28,7 @@ hyper-vm-image.workspace = true
 workspace = true
 
 [features]
-startup-profile = ["hyper-vm-support/startup-profile", "hyper-vm-support-shared/startup-profile"]
+startup-profile = []
 broker-test = []
 test-runtime-crash = []
 test-power-crash = []

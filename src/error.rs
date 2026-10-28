@@ -47,14 +47,14 @@ impl From<std::io::Error> for Error {
     }
 }
 
-impl From<hyper_vm_policy::image::CachedReadError<std::io::Error>> for Error {
-    fn from(error: hyper_vm_policy::image::CachedReadError<std::io::Error>) -> Self {
-        use hyper_vm_policy::image::CachedReadError;
+impl From<hyper_os::fs::BufferedReadError<std::io::Error>> for Error {
+    fn from(error: hyper_os::fs::BufferedReadError<std::io::Error>) -> Self {
+        use hyper_os::fs::BufferedReadError;
         match error {
-            CachedReadError::Source(error) => error.into(),
-            CachedReadError::Allocation => Self::Io(std::io::ErrorKind::OutOfMemory),
-            CachedReadError::InvalidRange => Self::InvalidImage,
-            CachedReadError::ReentrantRead => Self::Io(std::io::ErrorKind::Other),
+            BufferedReadError::Source(error) => error.into(),
+            BufferedReadError::Allocation => Self::Io(std::io::ErrorKind::OutOfMemory),
+            BufferedReadError::InvalidRange => Self::InvalidImage,
+            BufferedReadError::ReentrantRead => Self::Io(std::io::ErrorKind::Other),
         }
     }
 }

@@ -53,7 +53,11 @@ fn copy_payload(
         .load_address
         .checked_sub(memory_base)
         .ok_or(Error::InvalidImage)?;
-    let statistics = hyper_vm_support::image_io::copy(
+    #[cfg(not(feature = "startup-profile"))]
+    use hyper_os::fs::transfer::copy_range;
+    #[cfg(feature = "startup-profile")]
+    use hyper_os::fs::transfer::copy_range_profiled as copy_range;
+    let copied = copy_range(
         payload.file_offset,
         payload.length,
         |offset, bytes| source.read_exact_at(offset, bytes),
@@ -65,22 +69,25 @@ fn copy_payload(
         },
     )
     .map_err(|error| match error {
-        hyper_vm_support::image_io::Error::Read(error)
-        | hyper_vm_support::image_io::Error::Thread(error) => Error::Io(error.kind()),
-        hyper_vm_support::image_io::Error::Write(error) => error,
-        hyper_vm_support::image_io::Error::Allocation => Error::Io(std::io::ErrorKind::OutOfMemory),
-        hyper_vm_support::image_io::Error::InvalidRange => Error::InvalidImage,
-        hyper_vm_support::image_io::Error::WorkerStopped => Error::Io(std::io::ErrorKind::Other),
-    })?;
+        hyper_os::fs::transfer::Error::Read(error)
+        | hyper_os::fs::transfer::Error::Thread(error) => Error::Io(error.kind()),
+        hyper_os::fs::transfer::Error::Write(error) => error,
+        hyper_os::fs::transfer::Error::Allocation => Error::Io(std::io::ErrorKind::OutOfMemory),
+        hyper_os::fs::transfer::Error::InvalidRange => Error::InvalidImage,
+        hyper_os::fs::transfer::Error::WorkerStopped => Error::Io(std::io::ErrorKind::Other),
+    });
     #[cfg(feature = "startup-profile")]
-    eprintln!(
-        "HypeR startup profile: payload {} bytes read={} us write={} us",
-        payload.length,
-        statistics.read.as_micros(),
-        statistics.write.as_micros()
-    );
+    {
+        let statistics = copied?;
+        eprintln!(
+            "HypeR startup profile: payload {} bytes read={} us write={} us",
+            payload.length,
+            statistics.read.as_micros(),
+            statistics.write.as_micros()
+        );
+    }
     #[cfg(not(feature = "startup-profile"))]
-    let _ = statistics;
+    copied?;
     Ok(())
 }
 

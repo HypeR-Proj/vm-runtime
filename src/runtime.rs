@@ -30,14 +30,12 @@ pub(super) fn run(
         .take_optional(hyper_service::io::SESSION)
         .map_err(Error::OperatingSystem)?
         .map(hyper_os::capability_channel::CapabilityChannel::from_handle);
-    let source = hyper_vm_policy::image::CachedSource::new(ImageSource::new(
-        hyper_os::fs::File::from_handle(
-            startup
-                .take(vm_contract::IMAGE)
-                .map_err(Error::OperatingSystem)?,
-        ),
-    )?)
-    .map_err(Error::from)?;
+    let file = hyper_os::fs::File::from_handle(
+        startup
+            .take(vm_contract::IMAGE)
+            .map_err(Error::OperatingSystem)?,
+    );
+    let source = hyper_os::fs::BufferedReader::new(ImageSource::new(file)?).map_err(Error::from)?;
     let lease = startup
         .take(vm_contract::CREATION_LEASE)
         .map_err(Error::OperatingSystem)?;
