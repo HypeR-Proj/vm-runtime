@@ -43,5 +43,48 @@
       "app-test",
       "APP_TEST_PACKAGE=hyper-vm-runtime"
     ]
-  ]
+  ],
+  "cargo_context": {
+    "Cargo.toml": {
+      "workspace": null,
+      "membership": "../../app",
+      "dependency_paths": {
+        "/dependencies/hyper-service": "lib/service",
+        "/dependencies/hyper-vm-image": "lib/vm-image",
+        "target.cfg(target_os = \"hyper\")/dependencies/hyper-vm-policy-shared": "lib/vm-policy/shared",
+        "target.cfg(target_os = \"hyper\")/dependencies/hyper-vm-support-shared": "lib/vm-support/shared",
+        "target.cfg(not(target_os = \"hyper\"))/dependencies/hyper-vm-policy": "lib/vm-policy",
+        "target.cfg(not(target_os = \"hyper\"))/dependencies/hyper-vm-support": "lib/vm-support"
+      },
+      "inherited_dependencies": {
+        "/dependencies/hyper-os": {
+          "workspace": true,
+          "features": [
+            "std"
+          ]
+        },
+        "/dependencies/hyper-rt": {
+          "workspace": true
+        },
+        "/dependencies/hyper-service": {
+          "workspace": true
+        },
+        "/dependencies/hyper-vm-image": {
+          "workspace": true
+        },
+        "target.cfg(target_os = \"hyper\")/dependencies/hyper-vm-policy-shared": {
+          "workspace": true
+        },
+        "target.cfg(target_os = \"hyper\")/dependencies/hyper-vm-support-shared": {
+          "workspace": true
+        },
+        "target.cfg(not(target_os = \"hyper\"))/dependencies/hyper-vm-policy": {
+          "workspace": true
+        },
+        "target.cfg(not(target_os = \"hyper\"))/dependencies/hyper-vm-support": {
+          "workspace": true
+        }
+      }
+    }
+  }
 }
