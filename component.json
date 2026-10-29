@@ -1,38 +1,12 @@
 {
+  "SPDX-FileCopyrightText": "2026 roolrz",
+  "SPDX-License-Identifier": "Apache-2.0",
   "version": 1,
   "name": "vm-runtime",
   "kind": "service",
   "origin": {
     "repository": "https://github.com/roolrz/HypeR",
     "commit": "8d42d047058a2b58a291803700e86487fb723f7a"
-  },
-  "sources": {
-    "Cargo.toml": "svc/vm-runtime/Cargo.toml",
-    "component.mk": "svc/vm-runtime/component.mk",
-    "src/arguments.rs": "svc/vm-runtime/src/arguments.rs",
-    "src/console.rs": "svc/vm-runtime/src/console.rs",
-    "src/console_wait.rs": "svc/vm-runtime/src/console_wait.rs",
-    "src/control.rs": "svc/vm-runtime/src/control.rs",
-    "src/error.rs": "svc/vm-runtime/src/error.rs",
-    "src/image.rs": "svc/vm-runtime/src/image.rs",
-    "src/io_backends.rs": "svc/vm-runtime/src/io_backends.rs",
-    "src/io_backends/pci.rs": "svc/vm-runtime/src/io_backends/pci.rs",
-    "src/io_devices.rs": "svc/vm-runtime/src/io_devices.rs",
-    "src/lib.rs": "svc/vm-runtime/src/lib.rs",
-    "src/main.rs": "svc/vm-runtime/src/main.rs",
-    "src/runtime.rs": "svc/vm-runtime/src/runtime.rs",
-    "src/supervisor.rs": "svc/vm-runtime/src/supervisor.rs",
-    "tests/arguments.rs": "svc/vm-runtime/tests/arguments.rs",
-    "tests/console.rs": "svc/vm-runtime/tests/console.rs",
-    "tests/control.rs": "svc/vm-runtime/tests/control.rs",
-    "tests/crash.rs": "svc/vm-runtime/tests/crash.rs",
-    "tests/io_backends.rs": "svc/vm-runtime/tests/io_backends.rs",
-    "tests/power_crash.rs": "svc/vm-runtime/tests/power_crash.rs"
-  },
-  "SPDX-FileCopyrightText": "2026 roolrz",
-  "SPDX-License-Identifier": "Apache-2.0",
-  "mounts": {
-    "": "svc/vm-runtime"
   },
   "packages": [
     "hyper-vm-runtime"
@@ -43,48 +17,5 @@
       "app-test",
       "APP_TEST_PACKAGE=hyper-vm-runtime"
     ]
-  ],
-  "cargo_context": {
-    "Cargo.toml": {
-      "workspace": null,
-      "membership": "../../app",
-      "dependency_paths": {
-        "/dependencies/hyper-service": "lib/service",
-        "/dependencies/hyper-vm-image": "lib/vm-image",
-        "target.cfg(target_os = \"hyper\")/dependencies/hyper-vm-policy-shared": "lib/vm-policy/shared",
-        "target.cfg(target_os = \"hyper\")/dependencies/hyper-vm-support-shared": "lib/vm-support/shared",
-        "target.cfg(not(target_os = \"hyper\"))/dependencies/hyper-vm-policy": "lib/vm-policy",
-        "target.cfg(not(target_os = \"hyper\"))/dependencies/hyper-vm-support": "lib/vm-support"
-      },
-      "inherited_dependencies": {
-        "/dependencies/hyper-os": {
-          "workspace": true,
-          "features": [
-            "std"
-          ]
-        },
-        "/dependencies/hyper-rt": {
-          "workspace": true
-        },
-        "/dependencies/hyper-service": {
-          "workspace": true
-        },
-        "/dependencies/hyper-vm-image": {
-          "workspace": true
-        },
-        "target.cfg(target_os = \"hyper\")/dependencies/hyper-vm-policy-shared": {
-          "workspace": true
-        },
-        "target.cfg(target_os = \"hyper\")/dependencies/hyper-vm-support-shared": {
-          "workspace": true
-        },
-        "target.cfg(not(target_os = \"hyper\"))/dependencies/hyper-vm-policy": {
-          "workspace": true
-        },
-        "target.cfg(not(target_os = \"hyper\"))/dependencies/hyper-vm-support": {
-          "workspace": true
-        }
-      }
-    }
-  }
+  ]
 }
