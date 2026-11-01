@@ -5,29 +5,28 @@ bin = [{name = "hyper-vm-runtime", path = "src/main.rs", test = false, bench = f
 
 [package]
 name = "hyper-vm-runtime"
-version = "0.0.0"
+version = "0.1.0"
 edition = "2024"
 license = "Apache-2.0"
 repository = "https://github.com/HypeR-Proj/vm-runtime"
 publish = false
 autotests = false
-workspace = "../../app"
 
 [dependencies]
 
 [dependencies.hyper-os]
-workspace = true
+version = "=0.0.0"
 features = ["std"]
 
 [dependencies.hyper-rt]
-workspace = true
+version = "=0.0.0"
 features = ["std"]
 
 [dependencies.hyper-service]
-workspace = true
+path = "../../lib/service"
 
 [dependencies.hyper-vm-image]
-workspace = true
+path = "../../lib/vm-image"
 
 [lints]
 
@@ -63,17 +62,35 @@ test-power-crash = []
 [target."cfg(target_os = \"hyper\")".dependencies]
 
 [target."cfg(target_os = \"hyper\")".dependencies.hyper-vm-policy-shared]
-workspace = true
+path = "../../lib/vm-policy/shared"
+default-features = false
 
 [target."cfg(target_os = \"hyper\")".dependencies.hyper-vm-support-shared]
-workspace = true
+path = "../../lib/vm-support/shared"
+default-features = false
 
 [target."cfg(not(target_os = \"hyper\"))"]
 
 [target."cfg(not(target_os = \"hyper\"))".dependencies]
 
 [target."cfg(not(target_os = \"hyper\"))".dependencies.hyper-vm-policy]
-workspace = true
+path = "../../lib/vm-policy"
 
 [target."cfg(not(target_os = \"hyper\"))".dependencies.hyper-vm-support]
-workspace = true
+path = "../../lib/vm-support"
+
+[workspace]
+resolver = "3"
+members = []
+
+[profile]
+
+[profile.release]
+codegen-units = 1
+debug = 1
+incremental = false
+lto = "fat"
+opt-level = "s"
+overflow-checks = true
+panic = "abort"
+strip = "none"
